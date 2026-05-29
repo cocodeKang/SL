@@ -106,6 +106,12 @@
     output{font-size:22px;color:#fff}
     .diag{font-size:13px;line-height:1.8;color:var(--muted);background:#0b1220;border:1px solid var(--line);border-radius:14px;padding:14px;white-space:pre-wrap}
     .small-note{color:var(--soft);font-size:13px;line-height:1.5}
+    .date-helper{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .calendar-btn{background:#0b1220;border-color:#38bdf8;color:#e0f2fe}
+    .analysis-box{border:1px solid #0e7490;background:#0b3045;color:#e0f2fe;border-radius:16px;padding:14px;line-height:1.7}
+    .analysis-box b{color:#fff}
+    .title-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .gpt-link{display:inline-flex;align-items:center;border:1px solid #38bdf8;background:#0b3045;color:#e0f2fe;text-decoration:none;border-radius:999px;padding:7px 12px;font-weight:900;font-size:13px}
     .toast{position:fixed;left:50%;bottom:calc(22px + var(--safe-bottom));transform:translateX(-50%) translateY(20px);background:#020617;border:1px solid var(--line2);color:#fff;border-radius:999px;padding:12px 16px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.2s;z-index:20;max-width:min(92vw,720px)}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     .mobile-bottom{display:none;position:fixed;left:0;right:0;bottom:0;padding:8px 10px calc(8px + var(--safe-bottom));background:rgba(2,6,23,.92);backdrop-filter:blur(12px);border-top:1px solid var(--line2);z-index:10;gap:8px}
@@ -194,7 +200,7 @@
         <div class="panel-head">
           <div>
             <h2>일반기록</h2>
-            <p>3쿼터 동안 관문별로 들어간 퍽을 기록합니다. 점수는 자동 계산됩니다.</p>
+            <p>기본 30퍽부터 10퍽 반복게임까지 유연하게 기록합니다. 평균점수·최고게임·잘 들어간 관문을 자동 분석합니다.</p>
           </div>
           <button id="newScoreBtn" class="secondary" type="button">새 기록</button>
         </div>
@@ -204,19 +210,25 @@
             <label>선수/이름 <input id="scorePlayer" type="text" placeholder="예: 강대희"></label>
             <label>훈련장소 <input id="scorePlace" type="text" placeholder="예: 복지관 프로그램실"></label>
             <label>오늘 목표 <input id="scoreGoal" type="text" placeholder="예: 3점 관문 힘 조절"></label>
+            <label>퍽 수/게임 <input id="scorePuckCount" type="number" min="1" max="30" inputmode="numeric" value="30"></label>
+            <label>게임 수 <input id="scoreGameCount" type="number" min="1" max="20" inputmode="numeric" value="1"></label>
           </div>
           <div class="score-preview">
             <div><span>예상점수</span><strong id="liveScore">0</strong></div>
             <div><span>라인인 세트</span><strong id="liveSets">0</strong></div>
             <div><span>통과 퍽</span><strong id="liveTotalIn">0 / 30</strong></div>
             <div><span>성공률</span><strong id="liveRate">0%</strong></div>
+            <div><span>평균점수</span><strong id="liveAvgScore">0</strong></div>
+            <div><span>최고게임</span><strong id="liveBestGame">-</strong></div>
+            <div><span>잘 들어간 관문</span><strong id="liveBestGate">-</strong></div>
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>쿼터</th><th>2점</th><th>3점</th><th>4점</th><th>1점</th></tr></thead>
+              <thead><tr><th>게임</th><th>2점</th><th>3점</th><th>4점</th><th>1점</th><th>게임점수</th><th>통과</th></tr></thead>
               <tbody id="quarterBody"></tbody>
             </table>
           </div>
+          <div id="scoreAnalysis" class="analysis-box">분석: 아직 입력된 퍽이 없습니다.</div>
           <details>
             <summary>빗나간 방향 기록</summary>
             <div class="form-grid">
@@ -320,7 +332,7 @@
       </section>
 
       <section id="updates" class="panel">
-        <div class="panel-head"><div><h2>업데이트·설정</h2><p>앱 개선사항과 기본값을 관리합니다.</p></div></div>
+        <div class="panel-head"><div><div class="title-row"><h2>업데이트·설정</h2><a class="gpt-link" href="https://chatgpt.com/c/6a1916df-8398-83a8-9407-54df4ef1e774" target="_blank" rel="noopener">(GPT)</a></div><p>앱 개선사항과 기본값을 관리합니다.</p></div></div>
         <div class="two">
           <form id="updateForm" class="card form-card">
             <h3>업데이트 메모</h3>
@@ -463,14 +475,22 @@
       });
     }
 
+    function getScoreConfig(){
+      const puckCount = Math.max(1, Math.min(30, n($("#scorePuckCount")?.value || 30) || 30));
+      const gameCount = Math.max(1, Math.min(20, n($("#scoreGameCount")?.value || 1) || 1));
+      return {puckCount, gameCount, totalPucks:puckCount*gameCount};
+    }
+
     function buildQuarterRows(){
       const body=$("#quarterBody");
+      if(!body) return;
       body.innerHTML="";
       const gates=[2,3,4,1];
-      for(let q=1;q<=3;q++){
+      const {gameCount}=getScoreConfig();
+      for(let q=1;q<=gameCount;q++){
         const tr=document.createElement("tr");
         const th=document.createElement("th");
-        th.textContent=q+"쿼터";
+        th.textContent=q+"게임";
         tr.appendChild(th);
         gates.forEach(g=>{
           const td=document.createElement("td");
@@ -482,42 +502,102 @@
             </div>`;
           tr.appendChild(td);
         });
+        const scoreTd=document.createElement("td");
+        scoreTd.innerHTML=`<strong id="q${q}Score">0</strong>`;
+        tr.appendChild(scoreTd);
+        const inTd=document.createElement("td");
+        inTd.innerHTML=`<span id="q${q}In">0</span>`;
+        tr.appendChild(inTd);
         body.appendChild(tr);
       }
-      body.addEventListener("click", e=>{
+      body.onclick = e=>{
         const btn=e.target.closest("button[data-step]");
         if(!btn) return;
         const input = $(`#q${btn.dataset.q}g${btn.dataset.g}`);
         input.value = Math.max(0, n(input.value) + Number(btn.dataset.step));
         updateLiveScore();
-      });
-      $$("[data-score-input]").forEach(inp=>inp.addEventListener("input", updateLiveScore));
+      };
+      $$('[data-score-input]').forEach(inp=>inp.addEventListener("input", updateLiveScore));
+      updateLiveScore();
+    }
+
+    function getGameRows(){
+      const gates=[2,3,4,1];
+      const {gameCount}=getScoreConfig();
+      const rows=[];
+      for(let q=1;q<=gameCount;q++){
+        const row={q, g1:0, g2:0, g3:0, g4:0};
+        gates.forEach(g=> row[`g${g}`]=n($(`#q${q}g${g}`)?.value));
+        const totals={1:row.g1,2:row.g2,3:row.g3,4:row.g4};
+        const c=calcScore(totals, getScoreConfig().puckCount);
+        rows.push({...row, ...c});
+      }
+      return rows;
     }
 
     function getGateTotals(){
-      const gates=[2,3,4,1];
       const totals={1:0,2:0,3:0,4:0};
-      for(let q=1;q<=3;q++){
-        gates.forEach(g=> totals[g]+=n($(`#q${q}g${g}`).value));
-      }
+      getGameRows().forEach(row=>{
+        totals[1]+=row.g1; totals[2]+=row.g2; totals[3]+=row.g3; totals[4]+=row.g4;
+      });
       return totals;
     }
 
-    function calcScore(totals){
-      const sets = Math.min(totals[1], totals[2], totals[3], totals[4]);
-      const score = sets*20 + (totals[1]-sets)*1 + (totals[2]-sets)*2 + (totals[3]-sets)*3 + (totals[4]-sets)*4;
-      const totalIn = totals[1]+totals[2]+totals[3]+totals[4];
-      const rate = Math.round((totalIn/30)*100);
+    function calcScore(totals, maxPucks=30){
+      const sets = Math.min(totals[1]||0, totals[2]||0, totals[3]||0, totals[4]||0);
+      const score = sets*20 + ((totals[1]||0)-sets)*1 + ((totals[2]||0)-sets)*2 + ((totals[3]||0)-sets)*3 + ((totals[4]||0)-sets)*4;
+      const totalIn = (totals[1]||0)+(totals[2]||0)+(totals[3]||0)+(totals[4]||0);
+      const rate = Math.round((totalIn/Math.max(1,maxPucks))*100);
       return {sets, score, totalIn, rate};
     }
 
+    function bestGateFromTotals(totals){
+      const sorted=[2,3,4,1].sort((a,b)=>(totals[b]||0)-(totals[a]||0));
+      const best=sorted[0];
+      return (totals[best]||0) ? `${best}점` : "-";
+    }
+
+    function analyzeScoreRows(rows, totals){
+      const {puckCount, gameCount, totalPucks}=getScoreConfig();
+      const totalScore=rows.reduce((s,r)=>s+r.score,0);
+      const totalIn=rows.reduce((s,r)=>s+r.totalIn,0);
+      const avg=rows.length ? (totalScore/rows.length) : 0;
+      const best=rows.length ? rows.reduce((a,b)=>b.score>a.score?b:a, rows[0]) : null;
+      const bestGate=bestGateFromTotals(totals);
+      const weakGate=weakGateFromTotals(totals);
+      const overInput=totalIn>totalPucks;
+      const bestZone = bestGate==="-" ? "아직 없음" : `${bestGate} 관문`;
+      const msg = `${gameCount}게임 × ${puckCount}퍽 기준 · 총점 ${totalScore}점 · 평균 ${avg.toFixed(1)}점 · 최고 ${best ? best.q+"게임 "+best.score+"점" : "-"} · 가장 잘 넣은 구간 ${bestZone} · 보완 관문 ${weakGate}${overInput ? " · ⚠ 입력한 통과 퍽이 설정한 총 퍽 수보다 많습니다." : ""}`;
+      return {totalScore, avgScore:Number(avg.toFixed(1)), bestGame:best, bestGate, weakGate, totalIn, totalPucks, message:msg};
+    }
+
+    function weakGateFromTotals(totals){
+      const existing=[2,3,4,1];
+      const hasAny=existing.some(g=>(totals[g]||0)>0);
+      if(!hasAny) return "-";
+      const minGate = existing.sort((a,b)=>(totals[a]||0)-(totals[b]||0))[0];
+      return `${minGate}점`;
+    }
+
     function updateLiveScore(){
+      const rows=getGameRows();
       const totals=getGateTotals();
-      const c=calcScore(totals);
+      const {totalPucks}=getScoreConfig();
+      const c=calcScore(totals, totalPucks);
+      const analysis=analyzeScoreRows(rows, totals);
+      rows.forEach(r=>{
+        const s=$(`#q${r.q}Score`), i=$(`#q${r.q}In`);
+        if(s) s.textContent=r.score;
+        if(i) i.textContent=`${r.totalIn}`;
+      });
       $("#liveScore").textContent=c.score;
       $("#liveSets").textContent=c.sets;
-      $("#liveTotalIn").textContent=`${c.totalIn} / 30`;
+      $("#liveTotalIn").textContent=`${c.totalIn} / ${totalPucks}`;
       $("#liveRate").textContent=`${c.rate}%`;
+      $("#liveAvgScore").textContent=analysis.avgScore;
+      $("#liveBestGame").textContent=analysis.bestGame ? `${analysis.bestGame.q}게임 ${analysis.bestGame.score}` : "-";
+      $("#liveBestGate").textContent=analysis.bestGate;
+      $("#scoreAnalysis").innerHTML=`<b>분석:</b> ${escapeHtml(analysis.message)}`;
     }
 
     function updateTargetLive(){
@@ -549,35 +629,76 @@
     function setDefaultDates(){
       ["scoreDate","targetDate","focusDate","reflectionDate"].forEach(id=>{
         const el=$("#"+id);
-        if(el) el.value=today();
+        if(el && !el.value) el.value=today();
+      });
+      updateDateDisplays();
+    }
+
+    function formatDateKo(value){
+      if(!value) return "";
+      const d=new Date(value+"T00:00:00");
+      if(Number.isNaN(d.getTime())) return value;
+      const days=["일","월","화","수","목","금","토"];
+      return `${value}(${days[d.getDay()]})`;
+    }
+
+    function enhanceDateInputs(){
+      $$('input[type="date"]').forEach(el=>{
+        if(el.dataset.dateEnhanced) return;
+        const wrap=document.createElement("div");
+        wrap.className="date-helper";
+        const btn=document.createElement("button");
+        btn.type="button";
+        btn.className="mini-btn calendar-btn";
+        btn.title="달력 열기";
+        btn.addEventListener("click",()=>{
+          if(typeof el.showPicker==="function") el.showPicker();
+          else { el.focus(); el.click(); }
+        });
+        el.insertAdjacentElement("afterend", wrap);
+        wrap.appendChild(btn);
+        el.dataset.dateEnhanced="1";
+        el.addEventListener("input",updateDateDisplays);
+      });
+      updateDateDisplays();
+    }
+
+    function updateDateDisplays(){
+      $$('input[type="date"]').forEach(el=>{
+        const btn=el.parentElement?.querySelector(".calendar-btn");
+        if(btn) btn.textContent = `📅 ${formatDateKo(el.value) || "날짜 선택"}`;
       });
     }
 
     function collectScore(){
+      const rows=getGameRows();
       const totals=getGateTotals();
-      const c=calcScore(totals);
-      const quarters=[];
-      for(let q=1;q<=3;q++){
-        quarters.push({
-          q,
-          g2:n($(`#q${q}g2`).value),
-          g3:n($(`#q${q}g3`).value),
-          g4:n($(`#q${q}g4`).value),
-          g1:n($(`#q${q}g1`).value)
-        });
-      }
+      const {puckCount, gameCount, totalPucks}=getScoreConfig();
+      const c=calcScore(totals, totalPucks);
+      const analysis=analyzeScoreRows(rows, totals);
       return {
         type:"score",
         date:$("#scoreDate").value || today(),
+        dateText:formatDateKo($("#scoreDate").value || today()),
         player:$("#scorePlayer").value.trim(),
         place:$("#scorePlace").value.trim(),
         goal:$("#scoreGoal").value.trim(),
-        quarters,
+        puckCount,
+        gameCount,
+        totalPucks,
+        rounds:rows,
+        quarters:rows,
         totals,
         score:c.score,
         sets:c.sets,
         totalIn:c.totalIn,
         rate:c.rate,
+        avgScore:analysis.avgScore,
+        bestGameNo:analysis.bestGame?.q || "",
+        bestGameScore:analysis.bestGame?.score ?? "",
+        bestGate:analysis.bestGate,
+        weakGate:analysis.weakGate,
+        analysisText:analysis.message,
         misses:{short:n($("#missShort").value), long:n($("#missLong").value), left:n($("#missLeft").value), right:n($("#missRight").value)},
         good:$("#scoreGood").value.trim(),
         improve:$("#scoreImprove").value.trim(),
@@ -593,6 +714,7 @@
       return {
         type:"target",
         date:$("#targetDate").value || today(),
+        dateText:formatDateKo($("#targetDate").value || today()),
         player:$("#targetPlayer").value.trim(),
         gate:$("#targetGate").value,
         throws,
@@ -611,6 +733,7 @@
       return {
         type:"focus",
         date:$("#focusDate").value || today(),
+        dateText:formatDateKo($("#focusDate").value || today()),
         player:$("#focusPlayer").value.trim(),
         keyword:$("#focusKeyword").value.trim(),
         sets:n($("#focusSets").value),
@@ -637,6 +760,7 @@
       return {
         type:"reflection",
         date:$("#reflectionDate").value || today(),
+        dateText:formatDateKo($("#reflectionDate").value || today()),
         category:$("#reflectionType").value,
         question:$("#reflectionQuestion").value.trim(),
         answer:$("#reflectionAnswer").value.trim(),
@@ -669,7 +793,7 @@
       if(!state.firestoreReady || !state.uid) throw new Error("Firebase 로그인 또는 Firestore 연결이 아직 준비되지 않았습니다.");
       const { collection, addDoc, serverTimestamp } = state.fb;
       const ref = collection(state.fb.db, "users", state.uid, collectionName);
-      await addDoc(ref, {...data, createdAt:serverTimestamp(), updatedAt:serverTimestamp(), appVersion:"anonymous-single-v3"});
+      await addDoc(ref, {...data, createdAt:serverTimestamp(), updatedAt:serverTimestamp(), appVersion:"anonymous-single-v4-flex-games"});
     }
 
     async function saveRecord(kind, data){
@@ -696,6 +820,9 @@
       applySettings();
       $$("[data-score-input]").forEach(i=>i.value=0);
       ["missShort","missLong","missLeft","missRight"].forEach(id=>$("#"+id).value=0);
+      $("#scorePuckCount").value=30;
+      $("#scoreGameCount").value=1;
+      buildQuarterRows();
       updateLiveScore();
     }
 
@@ -729,13 +856,18 @@
         $("#updateDetail").value="";
       });
       $("#newScoreBtn").addEventListener("click", resetScoreForm);
+      ["scorePuckCount","scoreGameCount"].forEach(id=>$("#"+id).addEventListener("input",()=>{ buildQuarterRows(); updateLiveScore(); }));
       $("#copySummaryBtn").addEventListener("click", async ()=>{
         const r=collectScore();
         const text=`슐런 훈련 요약
-일자: ${r.date}
+일자: ${r.dateText}
 선수: ${r.player}
-점수: ${r.score}점 / 세트: ${r.sets} / 통과: ${r.totalIn}/30 / 성공률: ${r.rate}%
+방식: ${r.gameCount}게임 × ${r.puckCount}퍽
+총점: ${r.score}점 / 평균: ${r.avgScore}점 / 최고게임: ${r.bestGameNo}게임 ${r.bestGameScore}점
+통과: ${r.totalIn}/${r.totalPucks} / 성공률: ${r.rate}%
 관문합계: 2점 ${r.totals[2]}, 3점 ${r.totals[3]}, 4점 ${r.totals[4]}, 1점 ${r.totals[1]}
+가장 잘 넣은 관문: ${r.bestGate} / 보완 관문: ${r.weakGate}
+분석: ${r.analysisText}
 잘 된 점: ${r.good}
 수정점: ${r.improve}
 다음 질문: ${r.question}`;
@@ -792,8 +924,7 @@
       if(!scores.length) return "-";
       const sum={1:0,2:0,3:0,4:0};
       scores.forEach(r=>[1,2,3,4].forEach(g=>sum[g]+=n(r.totals[g])));
-      const minGate = [2,3,4,1].sort((a,b)=>sum[a]-sum[b])[0];
-      return `${minGate}점`;
+      return weakGateFromTotals(sum);
     }
 
     function renderRecent(){
@@ -803,10 +934,10 @@
       box.className="list";
       box.innerHTML=all.map(r=>{
         let title = r.type==="score" ? `일반기록 · ${r.score ?? 0}점` : r.type==="target" ? `목표훈련 · ${r.gate}점 관문 ${r.hits}/${r.throws}` : `집중훈련 · ${r.keyword || "루틴 점검"}`;
-        let desc = r.type==="score" ? `통과 ${r.totalIn}/30 · 세트 ${r.sets} · ${r.question || r.memo || ""}` :
+        let desc = r.type==="score" ? `${r.gameCount||1}게임×${r.puckCount||30}퍽 · 평균 ${r.avgScore ?? "-"} · 최고 ${r.bestGameNo||"-"}게임 ${r.bestGameScore ?? ""} · 잘 넣은 관문 ${r.bestGate||"-"} · ${r.question || r.memo || ""}` :
                    r.type==="target" ? `${r.rate}% · ${r.next || r.memo || ""}` :
                    `집중도 ${r.focusScore} · 루틴 ${r.routineScore} · ${r.mantra || r.memo || ""}`;
-        return `<article class="item"><b>${escapeHtml(title)}</b><small>${escapeHtml(r.date || "")} ${escapeHtml(r.player || "")}</small><p>${escapeHtml(desc)}</p></article>`;
+        return `<article class="item"><b>${escapeHtml(title)}</b><small>${escapeHtml(r.dateText || formatDateKo(r.date) || "")} ${escapeHtml(r.player || "")}</small><p>${escapeHtml(desc)}</p></article>`;
       }).join("");
     }
 
@@ -815,7 +946,7 @@
       if(!state.reflections.length){rb.className="list empty";rb.textContent="아직 성찰 기록이 없습니다.";}
       else{
         rb.className="list";
-        rb.innerHTML=state.reflections.slice(0,20).map(r=>`<article class="item"><b>${escapeHtml(r.question||"질문")}</b><small>${escapeHtml(r.date||"")} · ${escapeHtml(r.category||"")}</small><p>${escapeHtml((r.answer||"") + (r.experiment ? "\n다음 실험: "+r.experiment : ""))}</p></article>`).join("");
+        rb.innerHTML=state.reflections.slice(0,20).map(r=>`<article class="item"><b>${escapeHtml(r.question||"질문")}</b><small>${escapeHtml(r.dateText || formatDateKo(r.date) || "")} · ${escapeHtml(r.category||"")}</small><p>${escapeHtml((r.answer||"") + (r.experiment ? "\n다음 실험: "+r.experiment : ""))}</p></article>`).join("");
       }
       const ub=$("#updateList");
       if(!state.updates.length){ub.className="list empty";ub.textContent="아직 업데이트 기록이 없습니다.";}
@@ -829,7 +960,7 @@
       $("#statTotal").textContent=state.records.length;
       const last=state.records[0];
       $("#statLastScore").textContent=last?.type==="score" ? `${last.score}점` : last ? last.type : "-";
-      $("#statLastDate").textContent=last?.date || "기록 없음";
+      $("#statLastDate").textContent=last ? (last.dateText || formatDateKo(last.date)) : "기록 없음";
       $("#statWeakGate").textContent=weakGate(state.records);
       const q = state.reflections.find(r=>r.question)?.question || state.records.find(r=>r.question)?.question || "-";
       $("#statNextQuestion").textContent = q==="-" ? "-" : (q.length>12 ? q.slice(0,12)+"…" : q);
@@ -878,6 +1009,14 @@ UID: ${state.uid || "-"}
         선수:r.player||"",
         장소:r.place||"",
         점수:r.score??"",
+        평균점수:r.avgScore??"",
+        최고게임:r.bestGameNo??"",
+        최고게임점수:r.bestGameScore??"",
+        가장잘넣은관문:r.bestGate??"",
+        보완관문:r.weakGate??"",
+        퍽수:r.puckCount??"",
+        게임수:r.gameCount??"",
+        총퍽수:r.totalPucks??"",
         세트:r.sets??"",
         통과:r.totalIn??"",
         성공률:r.rate??"",
@@ -886,6 +1025,8 @@ UID: ${state.uid || "-"}
         명중:r.hits??"",
         질문:r.question||"",
         메모:r.memo||"",
+        분석:r.analysisText||"",
+        표시날짜:r.dateText||formatDateKo(r.date)||"",
         생성시각:r.createdLocal||""
       };
       if(r.totals){
@@ -1046,6 +1187,7 @@ UID: ${state.uid || "-"}
       bindForms();
       bindKeyboard();
       setDefaultDates();
+      enhanceDateInputs();
       localLoad();
       applySettings();
       updateLiveScore();
