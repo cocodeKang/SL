@@ -1,485 +1,421 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>슐런 훈련 일지</title>
-<style>
-  :root{
-    --bg:#f6f7fb; --panel:#ffffff; --ink:#182033; --muted:#687086; --line:#dfe4ee;
-    --soft:#eef2ff; --accent:#2d5bff; --accent2:#171e37; --danger:#d64242; --good:#0a8f55;
-    --radius:18px; --shadow:0 10px 30px rgba(25,35,70,.09);
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;font-size:15px}
-  body{min-height:100vh}
-  button,input,select,textarea{font:inherit}
-  button{cursor:pointer;border:0;border-radius:14px;padding:10px 14px;background:var(--soft);color:var(--accent2);font-weight:800;touch-action:manipulation}
-  button.primary{background:var(--accent);color:#fff}
-  button.dark{background:var(--accent2);color:#fff}
-  button.ghost{background:#fff;border:1px solid var(--line)}
-  button.danger{background:#fff0f0;color:var(--danger);border:1px solid #ffd1d1}
-  button.small{padding:7px 10px;border-radius:11px;font-size:13px}
-  button.active{background:var(--accent2);color:#fff}
-  label{display:block;font-size:13px;color:var(--muted);font-weight:800;margin:0 0 6px}
-  input,select,textarea{width:100%;border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:#fff;color:var(--ink);outline:none}
-  input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(45,91,255,.12)}
-  textarea{min-height:92px;resize:vertical;line-height:1.55}
-  .app{max-width:1380px;margin:0 auto;padding:18px 18px 92px}
-  .top{display:flex;align-items:center;gap:14px;justify-content:space-between;margin-bottom:14px}
-  .brand{display:flex;gap:12px;align-items:center;min-width:260px}
-  .logo{width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg,#2d5bff,#11182f);display:grid;place-items:center;color:#fff;font-size:22px;box-shadow:var(--shadow)}
-  h1{font-size:22px;margin:0;letter-spacing:-.02em}
-  .sub{font-size:13px;color:var(--muted);margin-top:3px}
-  .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-  .sync{display:flex;gap:8px;align-items:center;justify-content:flex-end;min-width:260px}
-  .status{font-size:12px;color:var(--muted);white-space:nowrap}
-  .layout{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;align-items:start}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:16px}
-  .panel h2{font-size:18px;margin:0 0 12px;letter-spacing:-.02em;display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
-  .col-12{grid-column:span 12}.col-9{grid-column:span 9}.col-8{grid-column:span 8}.col-6{grid-column:span 6}.col-4{grid-column:span 4}.col-3{grid-column:span 3}.col-2{grid-column:span 2}
-  .hidden{display:none!important}
-  .help{font-size:13px;color:var(--muted);line-height:1.5}
-  .pillrow{display:flex;gap:8px;flex-wrap:wrap}
-  .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:#f0f3fa;border:1px solid var(--line);padding:8px 11px;font-size:13px;font-weight:800;color:var(--accent2)}
-  .pill.good{background:#eefaf4;color:var(--good);border-color:#ccefdc}.pill.warn{background:#fff7e8;color:#9a6200;border-color:#f1dfb6}.pill.bad{background:#fff0f0;color:var(--danger);border-color:#ffd1d1}
-  .scorebox{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-  .metric{background:#f7f8fc;border:1px solid var(--line);border-radius:16px;padding:12px;text-align:center}
-  .metric b{display:block;font-size:26px;letter-spacing:-.03em}.metric span{font-size:12px;color:var(--muted);font-weight:800}
-  .gate-board{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
-  .gate{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;text-align:center}
-  .gate .head{padding:9px;background:#f2f4fa;font-weight:900}.gate .num{padding:8px 8px 12px;font-size:28px;font-weight:900}
-  .quarter{overflow:auto;border:1px solid var(--line);border-radius:16px}
-  table{width:100%;border-collapse:collapse}
-  th,td{border-bottom:1px solid var(--line);padding:9px;text-align:center;white-space:nowrap}
-  th{background:#f4f6fb;color:var(--muted);font-size:12px}td:first-child,th:first-child{text-align:left;font-weight:900}
-  .qinput{width:72px;text-align:center;font-weight:900;padding:9px;border-radius:12px}
-  .stepper{display:flex;align-items:center;justify-content:center;gap:6px}.stepper button{padding:7px 9px;min-width:34px}
-  .records{display:flex;flex-direction:column;gap:9px;max-height:460px;overflow:auto;padding-right:4px}
-  .record{border:1px solid var(--line);border-radius:16px;background:#fff;padding:12px;display:grid;gap:7px}
-  .recordTop{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.recordTitle{font-weight:900}.recordMeta{font-size:12px;color:var(--muted)}
-  .miniChart{height:8px;background:#ecf0f7;border-radius:999px;overflow:hidden;display:flex}.bar{height:100%}
-  .suggest{background:linear-gradient(180deg,#ffffff,#f7f9ff);border:1px solid var(--line);border-radius:18px;padding:14px}
-  .suggest b{display:block;margin-bottom:6px}.suggest ul{margin:8px 0 0;padding-left:20px;color:var(--muted);line-height:1.55}
-  .mobileDock{display:none;position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(255,255,255,.96);border-top:1px solid var(--line);padding:8px max(8px,env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-right));box-shadow:0 -8px 24px rgba(20,30,60,.1)}
-  .mobileDock .row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.mobileDock button{font-size:12px;padding:9px 6px;border-radius:12px}
-  .toast{position:fixed;right:18px;bottom:18px;background:#11182f;color:#fff;border-radius:14px;padding:11px 14px;font-weight:800;box-shadow:var(--shadow);z-index:30;opacity:0;transform:translateY(10px);transition:.22s}
-  .toast.show{opacity:1;transform:translateY(0)}
-  .modal{position:fixed;inset:0;background:rgba(15,20,35,.42);display:none;align-items:center;justify-content:center;padding:18px;z-index:40}.modal.show{display:flex}.modalCard{width:min(720px,100%);max-height:86vh;overflow:auto;background:#fff;border-radius:24px;border:1px solid var(--line);box-shadow:var(--shadow);padding:18px}
-  .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#eef1f8;border:1px solid #d8deeb;border-radius:7px;padding:1px 6px;font-size:12px;color:#2b3348}
-  @media (max-width:900px){
-    .app{padding:12px 10px 92px}.top{display:block}.brand{margin-bottom:10px}.tabs{justify-content:flex-start;overflow:auto;flex-wrap:nowrap;padding-bottom:4px}.tabs button{white-space:nowrap}.sync{justify-content:space-between;margin-top:8px;min-width:0}.layout{grid-template-columns:1fr}.panel{padding:13px;border-radius:16px;margin-bottom:12px}.grid{gap:10px}.col-9,.col-8,.col-6,.col-4,.col-3,.col-2{grid-column:span 12}.scorebox{grid-template-columns:repeat(2,1fr)}.gate-board{grid-template-columns:repeat(4,1fr);gap:5px}.gate .head{padding:7px 3px;font-size:12px}.gate .num{font-size:20px}.qinput{width:54px;padding:8px 4px}.stepper{gap:3px}.stepper button{padding:7px 6px;min-width:28px}.desktopOnly{display:none!important}.mobileDock{display:block}.toast{left:10px;right:10px;bottom:70px;text-align:center}
-  }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <title>슐런 훈련 일지</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<div class="app">
-  <div class="top">
-    <div class="brand">
-      <div class="logo">◉</div>
-      <div><h1>슐런 훈련 일지</h1><div class="sub">점수보다 “퍽이 왜 그렇게 갔는가”를 기록하는 앱</div></div>
-    </div>
-    <div class="tabs" id="tabs">
-      <button data-tab="log" class="active">일반기록</button>
-      <button data-tab="target">목표훈련</button>
-      <button data-tab="focus">집중훈련</button>
-      <button data-tab="question">질문·성찰</button>
-      <button data-tab="update">업데이트</button>
-    </div>
-    <div class="sync">
-      <span class="status" id="syncStatus">로컬 준비</span>
-      <button class="small ghost" id="setupBtn">시트구성</button>
-      <button class="small dark" id="newBtn">새 기록</button>
-    </div>
-  </div>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Sjoelen Training Diary</p>
+        <h1>슐런 훈련 일지</h1>
+        <p class="subtitle">퍽의 원리 · 목표관문 · 집중루틴 · 성찰기록</p>
+      </div>
+      <div class="status-card" aria-live="polite">
+        <span id="syncDot" class="sync-dot offline"></span>
+        <div>
+          <strong id="syncStatus">초기화 중</strong>
+          <small id="userStatus">Firebase 연결 확인 중</small>
+          <div class="login-actions">
+            <button id="googleLoginBtn" type="button">Google 로그인</button>
+            <button id="anonLoginBtn" type="button">이 기기만</button>
+            <button id="logoutBtn" type="button" hidden>로그아웃</button>
+          </div>
+        </div>
+      </div>
+    </header>
 
-  <div class="layout">
+    <nav class="tabbar" aria-label="주요 메뉴">
+      <button class="tab active" data-tab="dashboard" type="button">홈</button>
+      <button class="tab" data-tab="score" type="button">일반기록</button>
+      <button class="tab" data-tab="target" type="button">목표훈련</button>
+      <button class="tab" data-tab="focus" type="button">집중훈련</button>
+      <button class="tab" data-tab="reflection" type="button">질문·성찰</button>
+      <button class="tab" data-tab="updates" type="button">업데이트</button>
+    </nav>
+
     <main>
-      <section class="panel" id="sessionPanel">
-        <h2><span id="sessionTitle">일반기록</span><span class="pill" id="autoSavePill">자동저장 ON</span></h2>
-        <div class="grid">
-          <div class="col-3"><label>날짜</label><input type="date" id="date"></div>
-          <div class="col-3"><label>선수/참여자</label><input id="player" placeholder="예: 강대희"></div>
-          <div class="col-3"><label>장소</label><input id="place" placeholder="예: 복지관 프로그램실"></div>
-          <div class="col-3"><label>퍽 수</label><select id="puckPlan"><option>30</option><option>20</option><option>10</option></select></div>
-          <div class="col-4"><label>훈련 구분</label><select id="trainingType"><option>일반 경기기록</option><option>목표훈련</option><option>집중훈련</option><option>라인인 균형훈련</option><option>약점관문 보완</option></select></div>
-          <div class="col-4"><label>집중 관문</label><select id="targetGate"><option value="">전체 균형</option><option value="2">2점 관문</option><option value="3">3점 관문</option><option value="4">4점 관문</option><option value="1">1점 관문</option></select></div>
-          <div class="col-4"><label>오늘 목표</label><input id="targetGoal" placeholder="예: 3점 관문 8개 / 100점 넘기기"></div>
+      <section id="dashboard" class="panel active" aria-labelledby="dashboard-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="dashboard-title">오늘의 훈련판</h2>
+            <p>최근 기록을 보며 오늘 집중할 관문과 습관을 정합니다.</p>
+          </div>
+          <button id="exportCsvBtn" class="primary ghost" type="button">CSV 내보내기</button>
         </div>
 
-        <div class="panel" style="box-shadow:none;margin:14px 0 0;padding:12px;background:#fbfcff">
-          <h2 style="font-size:16px;margin-bottom:8px">쿼터별 관문 입력 <span class="help">왼쪽부터 2·3·4·1점</span></h2>
-          <div class="quarter">
-            <table>
-              <thead><tr><th>쿼터</th><th>2점</th><th>3점</th><th>4점</th><th>1점</th></tr></thead>
+        <div class="stats-grid">
+          <article class="stat-card">
+            <span>총 기록</span>
+            <strong id="statTotalSessions">0</strong>
+            <small>Firestore 저장 기준</small>
+          </article>
+          <article class="stat-card">
+            <span>최근 점수</span>
+            <strong id="statLastScore">-</strong>
+            <small id="statLastDate">기록 없음</small>
+          </article>
+          <article class="stat-card">
+            <span>약한 관문</span>
+            <strong id="statWeakGate">-</strong>
+            <small>최근 10개 기록 기준</small>
+          </article>
+          <article class="stat-card">
+            <span>다음 질문</span>
+            <strong id="statNextQuestion">-</strong>
+            <small>성찰에서 자동 추출</small>
+          </article>
+        </div>
+
+        <div class="two-col">
+          <section class="card">
+            <h3>최근 기록</h3>
+            <div id="recentList" class="list empty">아직 저장된 기록이 없습니다.</div>
+          </section>
+          <section class="card guide-card">
+            <h3>오늘의 훈련 흐름</h3>
+            <ol class="guide-list">
+              <li><b>일반기록</b>으로 현재 점수와 관문 분포를 확인합니다.</li>
+              <li><b>목표훈련</b>에서 한 관문만 정해 반복 명중을 연습합니다.</li>
+              <li><b>집중훈련</b>에서 손 위치·시선·호흡·릴리스를 점검합니다.</li>
+              <li><b>질문·성찰</b>에 “왜 들어갔는가/왜 빗나갔는가”를 적습니다.</li>
+            </ol>
+            <p class="tip">핵심은 점수보다 “잘 들어간 퍽의 공통 원리”를 찾는 것입니다.</p>
+          </section>
+        </div>
+      </section>
+
+      <section id="score" class="panel" aria-labelledby="score-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="score-title">일반기록</h2>
+            <p>3쿼터 동안 관문별로 들어간 퍽을 기록합니다. 점수는 자동 계산됩니다.</p>
+          </div>
+          <button id="newScoreBtn" class="secondary" type="button">새 기록</button>
+        </div>
+
+        <form id="scoreForm" class="card form-card">
+          <div class="form-grid">
+            <label>훈련일
+              <input id="scoreDate" type="date" required />
+            </label>
+            <label>선수/이름
+              <input id="scorePlayer" type="text" placeholder="예: 강대희" />
+            </label>
+            <label>훈련장소
+              <input id="scorePlace" type="text" placeholder="예: 복지관 프로그램실" />
+            </label>
+            <label>오늘 목표
+              <input id="scoreGoal" type="text" placeholder="예: 3점 관문 힘 조절" />
+            </label>
+          </div>
+
+          <div class="score-preview" aria-live="polite">
+            <div><span>예상점수</span><strong id="liveScore">0</strong></div>
+            <div><span>라인인 세트</span><strong id="liveSets">0</strong></div>
+            <div><span>통과 퍽</span><strong id="liveTotalIn">0 / 30</strong></div>
+            <div><span>성공률</span><strong id="liveRate">0%</strong></div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="gate-table">
+              <thead>
+                <tr>
+                  <th>쿼터</th>
+                  <th>2점</th>
+                  <th>3점</th>
+                  <th>4점</th>
+                  <th>1점</th>
+                </tr>
+              </thead>
               <tbody id="quarterBody"></tbody>
             </table>
           </div>
-          <div class="help" style="margin-top:8px">관문을 통과하지 못한 퍽은 다음 쿼터에 다시 던진다고 보고, 각 쿼터에서 새로 들어간 개수를 입력합니다.</div>
-        </div>
 
-        <div class="grid" style="margin-top:12px">
-          <div class="col-3"><label>짧음</label><input type="number" min="0" id="missShort" placeholder="0"></div>
-          <div class="col-3"><label>김/강함</label><input type="number" min="0" id="missLong" placeholder="0"></div>
-          <div class="col-3"><label>왼쪽 이탈</label><input type="number" min="0" id="missLeft" placeholder="0"></div>
-          <div class="col-3"><label>오른쪽 이탈</label><input type="number" min="0" id="missRight" placeholder="0"></div>
-          <div class="col-3"><label>목표 명중</label><input type="number" min="0" id="targetHits" placeholder="목표훈련용"></div>
-          <div class="col-3"><label>집중도 1~5</label><input type="number" min="1" max="5" id="focusScore" placeholder="1~5"></div>
-          <div class="col-3"><label>루틴 안정 1~5</label><input type="number" min="1" max="5" id="routineScore" placeholder="1~5"></div>
-          <div class="col-3"><label>몸/자세 안정 1~5</label><input type="number" min="1" max="5" id="bodyScore" placeholder="1~5"></div>
-        </div>
+          <details class="detail-box">
+            <summary>빗나간 방향 기록</summary>
+            <div class="form-grid compact">
+              <label>짧음
+                <input id="missShort" type="number" min="0" inputmode="numeric" value="0" />
+              </label>
+              <label>김
+                <input id="missLong" type="number" min="0" inputmode="numeric" value="0" />
+              </label>
+              <label>왼쪽 이탈
+                <input id="missLeft" type="number" min="0" inputmode="numeric" value="0" />
+              </label>
+              <label>오른쪽 이탈
+                <input id="missRight" type="number" min="0" inputmode="numeric" value="0" />
+              </label>
+            </div>
+          </details>
 
-        <div class="grid" style="margin-top:12px">
-          <div class="col-6"><label>퍽 원리 메모</label><textarea id="principle" placeholder="예: 손목을 고정하니 3점 관문 앞에서 흔들림이 줄었다. 힘은 약간 줄이는 편이 좋았다."></textarea></div>
-          <div class="col-6"><label>성찰 기록</label><textarea id="reflection" placeholder="오늘 잘 된 점 / 안 된 이유 / 다음에 확인할 것"></textarea></div>
-          <div class="col-12"><label>다음 한 문장 목표</label><input id="nextGoal" placeholder="예: 다음 훈련은 4점 관문보다 1점 관문 균형을 먼저 맞춘다."></div>
-        </div>
+          <div class="form-grid textarea-grid">
+            <label>잘 들어간 퍽의 공통점
+              <textarea id="scoreGood" rows="3" placeholder="예: 손목을 고정하고 끝까지 밀었을 때 3점 관문에 안정적으로 들어갔다."></textarea>
+            </label>
+            <label>수정할 점
+              <textarea id="scoreImprove" rows="3" placeholder="예: 힘이 조금만 세지면 4점 관문 오른쪽 벽에 맞았다."></textarea>
+            </label>
+            <label>다음 훈련 질문
+              <textarea id="scoreQuestion" rows="3" placeholder="예: 3점 관문을 노릴 때 시선은 관문 중앙인가, 퍽의 진행선인가?"></textarea>
+            </label>
+          </div>
+
+          <div class="actions">
+            <button class="primary" type="submit">Firestore 저장</button>
+            <button id="copySummaryBtn" class="secondary" type="button">요약 복사</button>
+          </div>
+        </form>
       </section>
 
-      <section class="panel tabPanel hidden" id="targetPanel">
-        <h2>목표훈련 설계</h2>
-        <div class="suggest">
-          <b>목표훈련은 “한 관문을 의도적으로 넣는 능력”을 키우는 모드입니다.</b>
-          <ul>
-            <li>10개 단위로 시작: 한 관문만 보고 던진 뒤 명중 수를 기록합니다.</li>
-            <li>목표 관문을 바꿔가며 2·3·4·1 관문의 감각 차이를 비교합니다.</li>
-            <li>명중보다 중요한 기록은 “왜 빗나갔는가”입니다. 짧음/김/좌/우를 꼭 남깁니다.</li>
-          </ul>
+      <section id="target" class="panel" aria-labelledby="target-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="target-title">목표훈련</h2>
+            <p>원하는 관문 하나를 정하고, 명중률을 반복해서 확인합니다.</p>
+          </div>
         </div>
-        <div class="pillrow" style="margin-top:12px">
-          <button class="goalPreset" data-gate="2" data-goal="2점 관문 10개 중 6개 이상">2점 관문</button>
-          <button class="goalPreset" data-gate="3" data-goal="3점 관문 10개 중 6개 이상">3점 관문</button>
-          <button class="goalPreset" data-gate="4" data-goal="4점 관문 10개 중 6개 이상">4점 관문</button>
-          <button class="goalPreset" data-gate="1" data-goal="1점 관문 10개 중 6개 이상">1점 관문</button>
-        </div>
+
+        <form id="targetForm" class="card form-card">
+          <div class="form-grid">
+            <label>훈련일
+              <input id="targetDate" type="date" required />
+            </label>
+            <label>선수/이름
+              <input id="targetPlayer" type="text" placeholder="예: 강대희" />
+            </label>
+            <label>목표 관문
+              <select id="targetGate">
+                <option value="2">2점 관문</option>
+                <option value="3" selected>3점 관문</option>
+                <option value="4">4점 관문</option>
+                <option value="1">1점 관문</option>
+              </select>
+            </label>
+            <label>시도 퍽 수
+              <input id="targetThrows" type="number" min="1" max="30" inputmode="numeric" value="10" />
+            </label>
+            <label>명중 수
+              <input id="targetHits" type="number" min="0" max="30" inputmode="numeric" value="0" />
+            </label>
+            <label>목표 성공 기준
+              <input id="targetStandard" type="text" value="10개 중 6개 이상" />
+            </label>
+          </div>
+
+          <div class="target-buttons" aria-label="목표 관문 빠른 선택">
+            <button type="button" data-target-gate="2">2점 집중</button>
+            <button type="button" data-target-gate="3">3점 집중</button>
+            <button type="button" data-target-gate="4">4점 집중</button>
+            <button type="button" data-target-gate="1">1점 집중</button>
+          </div>
+
+          <div class="score-preview">
+            <div><span>목표 명중률</span><strong id="targetRate">0%</strong></div>
+            <div><span>훈련 판정</span><strong id="targetResult">기록 전</strong></div>
+          </div>
+
+          <div class="form-grid textarea-grid">
+            <label>성공한 퍽의 느낌
+              <textarea id="targetSuccessFeel" rows="3" placeholder="예: 퍽이 손에서 빠져나갈 때 힘이 부드러웠다."></textarea>
+            </label>
+            <label>실패한 퍽의 원인
+              <textarea id="targetFailCause" rows="3" placeholder="예: 관문을 직접 보며 밀 때 힘이 강해졌다."></textarea>
+            </label>
+            <label>다음 목표
+              <textarea id="targetNext" rows="3" placeholder="예: 3점 관문 10개 중 7개 이상"></textarea>
+            </label>
+          </div>
+
+          <div class="actions">
+            <button class="primary" type="submit">목표훈련 저장</button>
+          </div>
+        </form>
       </section>
 
-      <section class="panel tabPanel hidden" id="focusPanel">
-        <h2>집중훈련 설계</h2>
-        <div class="suggest">
-          <b>집중훈련은 “같은 동작을 반복하는 힘”을 키우는 모드입니다.</b>
-          <ul>
-            <li>던지기 전 루틴: 시선 → 손 위치 → 호흡 → 힘 조절 → 릴리스.</li>
-            <li>결과가 나쁘면 점수보다 루틴 점수와 집중도 점수를 먼저 봅니다.</li>
-            <li>라인인 세트가 적으면 특정 관문 욕심보다 4개 관문의 균형을 목표로 잡습니다.</li>
-          </ul>
+      <section id="focus" class="panel" aria-labelledby="focus-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="focus-title">집중훈련</h2>
+            <p>몸의 루틴을 고정해서 퍽이 일정하게 나가도록 연습합니다.</p>
+          </div>
         </div>
-        <div class="pillrow" style="margin-top:12px">
-          <button class="focusPreset" data-goal="던지기 전 3초 멈춤 루틴 유지" data-type="집중훈련">3초 멈춤</button>
-          <button class="focusPreset" data-goal="30개 모두 같은 손 위치에서 출발" data-type="집중훈련">손 위치 고정</button>
-          <button class="focusPreset" data-goal="4개 관문 균형 맞추기: 가장 적은 관문 보완" data-type="라인인 균형훈련">라인인 균형</button>
-        </div>
+
+        <form id="focusForm" class="card form-card">
+          <div class="form-grid">
+            <label>훈련일
+              <input id="focusDate" type="date" required />
+            </label>
+            <label>선수/이름
+              <input id="focusPlayer" type="text" placeholder="예: 강대희" />
+            </label>
+            <label>오늘의 집중 키워드
+              <input id="focusKeyword" type="text" placeholder="예: 손목 고정, 끝까지 밀기" />
+            </label>
+            <label>훈련 세트
+              <input id="focusSets" type="number" min="1" inputmode="numeric" value="3" />
+            </label>
+          </div>
+
+          <div class="routine-grid">
+            <label><input id="routineStance" type="checkbox" /> 발 위치 고정</label>
+            <label><input id="routineGrip" type="checkbox" /> 그립 압력 일정</label>
+            <label><input id="routineEyes" type="checkbox" /> 시선 기준 고정</label>
+            <label><input id="routineBreath" type="checkbox" /> 호흡 후 릴리스</label>
+            <label><input id="routineRelease" type="checkbox" /> 손목 꺾임 방지</label>
+            <label><input id="routineFollow" type="checkbox" /> 끝까지 밀기</label>
+          </div>
+
+          <div class="range-grid">
+            <label>집중도 <output id="focusScoreOut">3</output>
+              <input id="focusScore" type="range" min="1" max="5" value="3" />
+            </label>
+            <label>루틴 안정성 <output id="routineScoreOut">3</output>
+              <input id="routineScore" type="range" min="1" max="5" value="3" />
+            </label>
+            <label>자세 안정성 <output id="postureScoreOut">3</output>
+              <input id="postureScore" type="range" min="1" max="5" value="3" />
+            </label>
+          </div>
+
+          <div class="form-grid textarea-grid">
+            <label>흔들린 순간
+              <textarea id="focusShake" rows="3" placeholder="예: 점수 생각을 하자 손목에 힘이 들어갔다."></textarea>
+            </label>
+            <label>집중이 잘 된 조건
+              <textarea id="focusCondition" rows="3" placeholder="예: 한 번 숨을 내쉰 뒤 관문 중앙보다 길을 보고 밀었다."></textarea>
+            </label>
+            <label>다음 루틴 문장
+              <textarea id="focusMantra" rows="3" placeholder="예: 천천히, 낮게, 끝까지 민다."></textarea>
+            </label>
+          </div>
+
+          <div class="actions">
+            <button class="primary" type="submit">집중훈련 저장</button>
+          </div>
+        </form>
       </section>
 
-      <section class="panel tabPanel hidden" id="questionPanel">
-        <h2>질문·성찰 기록</h2>
-        <div class="grid">
-          <div class="col-6"><label>오늘의 질문</label><select id="qQuestion"></select></div>
-          <div class="col-6"><label>태그</label><input id="qTags" placeholder="예: 힘조절, 3점관문, 루틴"></div>
-          <div class="col-12"><label>답변</label><textarea id="qAnswer" placeholder="질문에 대한 나의 답을 적으면 자동 저장됩니다."></textarea></div>
-          <div class="col-12"><button class="primary" id="saveQuestionBtn">질문 기록 저장</button></div>
+      <section id="reflection" class="panel" aria-labelledby="reflection-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="reflection-title">질문·성찰</h2>
+            <p>기록을 쌓는 목적은 답을 찾는 것입니다. 질문을 남기고 다음 훈련에서 확인합니다.</p>
+          </div>
         </div>
-        <div class="help" style="margin-top:10px">질문은 점수보다 원리를 찾기 위한 장치입니다. 같은 질문을 여러 날 반복하면 슐런 감각이 문장으로 정리됩니다.</div>
+
+        <form id="reflectionForm" class="card form-card">
+          <div class="form-grid">
+            <label>작성일
+              <input id="reflectionDate" type="date" required />
+            </label>
+            <label>분류
+              <select id="reflectionType">
+                <option>관문 집중</option>
+                <option>힘 조절</option>
+                <option>시선</option>
+                <option>손목/릴리스</option>
+                <option>멘탈/집중</option>
+                <option>기타</option>
+              </select>
+            </label>
+          </div>
+          <label>질문
+            <textarea id="reflectionQuestion" rows="3" required placeholder="예: 왜 3점 관문을 노릴 때 오른쪽으로 밀리는가?"></textarea>
+          </label>
+          <label>오늘의 답 / 가설
+            <textarea id="reflectionAnswer" rows="4" placeholder="예: 손목보다 어깨 방향이 먼저 오른쪽으로 열리는 것 같다."></textarea>
+          </label>
+          <label>다음 실험
+            <textarea id="reflectionExperiment" rows="3" placeholder="예: 발끝 방향을 보드와 평행하게 두고 10개만 실험한다."></textarea>
+          </label>
+          <div class="actions">
+            <button class="primary" type="submit">성찰 저장</button>
+          </div>
+        </form>
+
+        <section class="card">
+          <h3>성찰 목록</h3>
+          <div id="reflectionList" class="list empty">아직 성찰 기록이 없습니다.</div>
+        </section>
       </section>
 
-      <section class="panel tabPanel hidden" id="updatePanel">
-        <h2>업데이트 기록</h2>
-        <div class="grid">
-          <div class="col-3"><label>버전/날짜</label><input id="uVersion" placeholder="예: 2026-05-29"></div>
-          <div class="col-9"><label>제목</label><input id="uTitle" placeholder="예: 목표훈련 기능 추가"></div>
-          <div class="col-12"><label>업데이트 내용</label><textarea id="uContent" placeholder="추가/수정/불편했던 점/다음 개선할 점을 기록"></textarea></div>
-          <div class="col-12"><button class="primary" id="saveUpdateBtn">업데이트 저장</button></div>
+      <section id="updates" class="panel" aria-labelledby="updates-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="updates-title">업데이트·설정</h2>
+            <p>앱 개선사항과 불편한 점을 기록해 다음 버전으로 이어갑니다.</p>
+          </div>
         </div>
+
+        <div class="two-col">
+          <form id="updateForm" class="card form-card">
+            <h3>업데이트 메모</h3>
+            <label>종류
+              <select id="updateType">
+                <option>기능추가</option>
+                <option>오류수정</option>
+                <option>훈련질문</option>
+                <option>화면개선</option>
+                <option>기타</option>
+              </select>
+            </label>
+            <label>내용
+              <textarea id="updateDetail" rows="5" required placeholder="예: 모바일에서 관문 입력 버튼을 더 크게 만들기"></textarea>
+            </label>
+            <label>상태
+              <select id="updateStatus">
+                <option>요청</option>
+                <option>진행중</option>
+                <option>완료</option>
+                <option>보류</option>
+              </select>
+            </label>
+            <div class="actions">
+              <button class="primary" type="submit">업데이트 저장</button>
+            </div>
+          </form>
+
+          <section class="card">
+            <h3>앱 설정</h3>
+            <div class="form-grid one">
+              <label>기본 선수명
+                <input id="settingPlayer" type="text" placeholder="예: 강대희" />
+              </label>
+              <label>기본 장소
+                <input id="settingPlace" type="text" placeholder="예: 복지관 프로그램실" />
+              </label>
+            </div>
+            <div class="actions">
+              <button id="saveSettingsBtn" class="secondary" type="button">기기 설정 저장</button>
+              <button id="clearDraftBtn" class="danger" type="button">임시기록 삭제</button>
+            </div>
+            <p class="small-note">기본 선수명과 장소는 현재 기기 localStorage에 저장됩니다.</p>
+          </section>
+        </div>
+
+        <section class="card">
+          <h3>업데이트 기록</h3>
+          <div id="updateList" class="list empty">아직 업데이트 기록이 없습니다.</div>
+        </section>
       </section>
     </main>
-
-    <aside>
-      <section class="panel">
-        <h2>현재 기록 계산</h2>
-        <div class="scorebox">
-          <div class="metric"><b id="scoreView">0</b><span>점수</span></div>
-          <div class="metric"><b id="setsView">0</b><span>라인인 세트</span></div>
-          <div class="metric"><b id="totalInView">0</b><span>통과 퍽</span></div>
-          <div class="metric"><b id="rateView">0%</b><span>성공률</span></div>
-        </div>
-        <div class="gate-board">
-          <div class="gate"><div class="head">2점</div><div class="num" id="final2">0</div></div>
-          <div class="gate"><div class="head">3점</div><div class="num" id="final3">0</div></div>
-          <div class="gate"><div class="head">4점</div><div class="num" id="final4">0</div></div>
-          <div class="gate"><div class="head">1점</div><div class="num" id="final1">0</div></div>
-        </div>
-        <div class="suggest" style="margin-top:12px" id="coachBox"></div>
-      </section>
-
-      <section class="panel">
-        <h2>최근 기록 <button class="small ghost" id="exportBtn">CSV</button></h2>
-        <div class="records" id="recordList"></div>
-      </section>
-
-      <section class="panel desktopOnly">
-        <h2>PC 단축키</h2>
-        <div class="help">
-          <span class="kbd">Alt+1~5</span> 탭 이동 · <span class="kbd">Ctrl+N</span> 새 기록 · <span class="kbd">Esc</span> 입력 커서 해제 · <span class="kbd">Enter</span> 입력 저장 후 커서 해제<br>
-          숫자칸은 <span class="kbd">↑/↓</span> 또는 옆의 +/- 버튼으로 빠르게 조정할 수 있습니다.
-        </div>
-      </section>
-    </aside>
   </div>
-</div>
 
-<div class="mobileDock">
-  <div class="row">
-    <button data-tabgo="log">기록</button><button data-tabgo="target">목표</button><button data-tabgo="focus">집중</button><button id="mobileNew">새로</button><button id="mobileBlur">완료</button>
+  <div class="mobile-bottom" aria-label="모바일 빠른 메뉴">
+    <button data-tab="score" type="button">기록</button>
+    <button data-tab="target" type="button">목표</button>
+    <button data-tab="focus" type="button">집중</button>
+    <button data-tab="reflection" type="button">성찰</button>
   </div>
-</div>
-<div class="toast" id="toast"></div>
 
-<script>
-const App = {
-  key:'sjoelen-diary-v1',
-  records:[], questions:[], updates:[], current:null, currentTab:'log', saveTimer:null, serverReady:false,
-  questionBank:[
-    '오늘 퍽이 가장 많이 빗나간 방향은 어디였나?',
-    '힘이 강해서 실패했나, 약해서 실패했나?',
-    '시선은 관문을 봤나, 퍽을 봤나?',
-    '손목이 흔들린 순간은 언제였나?',
-    '라인인 세트가 부족했다면 가장 약한 관문은 어디였나?',
-    '다음 훈련에서 버릴 습관 하나는 무엇인가?',
-    '잘 들어간 퍽의 공통점은 무엇인가?',
-    '오늘 나만의 한 문장 원리는 무엇인가?'
-  ]
-};
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-const $ = sel => document.querySelector(sel);
-const $$ = sel => Array.from(document.querySelectorAll(sel));
-const fields = ['date','player','place','puckPlan','trainingType','targetGate','targetGoal','targetHits','focusScore','routineScore','bodyScore','missShort','missLong','missLeft','missRight','principle','reflection','nextGoal'];
-const qKeys = ['q1_2','q1_3','q1_4','q1_1','q2_2','q2_3','q2_4','q2_1','q3_2','q3_3','q3_4','q3_1'];
-
-function today(){ return new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10); }
-function uid(){ return 'sj_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
-function num(v){ return Number(v||0)||0; }
-function toast(msg){ const el=$('#toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),1800); }
-function setStatus(msg){ $('#syncStatus').textContent = msg; }
-function debounceSave(){ clearTimeout(App.saveTimer); App.saveTimer=setTimeout(saveCurrent,650); localDraft(); calcAndRender(); }
-
-function init(){
-  App.serverReady = typeof google !== 'undefined' && google.script && google.script.run;
-  buildQuarterTable();
-  buildQuestionBank();
-  bindEvents();
-  loadLocal();
-  if(!App.current) newRecord(false);
-  renderAll();
-  if(App.serverReady) loadServer(); else setStatus('로컬 저장 모드');
-}
-
-function buildQuarterTable(){
-  const body = $('#quarterBody'); body.innerHTML='';
-  const gates = ['2','3','4','1'];
-  for(let q=1;q<=3;q++){
-    const tr=document.createElement('tr');
-    tr.innerHTML = `<td>${q}쿼터</td>` + gates.map(g=>`<td><div class="stepper"><button class="small ghost minus" data-for="q${q}_${g}">-</button><input class="qinput" type="number" min="0" id="q${q}_${g}" value="0"><button class="small ghost plus" data-for="q${q}_${g}">+</button></div></td>`).join('');
-    body.appendChild(tr);
-  }
-}
-
-function buildQuestionBank(){
-  const sel = $('#qQuestion');
-  sel.innerHTML = App.questionBank.map(q=>`<option>${q}</option>`).join('');
-}
-
-function bindEvents(){
-  $$('#tabs button').forEach(btn=>btn.addEventListener('click',()=>goTab(btn.dataset.tab)));
-  $$('[data-tabgo]').forEach(btn=>btn.addEventListener('click',()=>goTab(btn.dataset.tabgo)));
-  $('#setupBtn').addEventListener('click', setupSheet);
-  $('#newBtn').addEventListener('click',()=>newRecord(true));
-  $('#mobileNew').addEventListener('click',()=>newRecord(true));
-  $('#mobileBlur').addEventListener('click',()=>document.activeElement && document.activeElement.blur());
-  $('#exportBtn').addEventListener('click', exportCSV);
-  $('#saveQuestionBtn').addEventListener('click', saveQuestion);
-  $('#saveUpdateBtn').addEventListener('click', saveUpdate);
-  fields.forEach(id=>$('#'+id).addEventListener('input', debounceSave));
-  qKeys.forEach(id=>$('#'+id).addEventListener('input', debounceSave));
-  $$('.plus,.minus').forEach(btn=>btn.addEventListener('click',()=>{
-    const input=$('#'+btn.dataset.for); const next=Math.max(0,num(input.value)+(btn.classList.contains('plus')?1:-1)); input.value=next; debounceSave();
-  }));
-  $$('.goalPreset').forEach(btn=>btn.addEventListener('click',()=>{
-    goTab('target'); $('#trainingType').value='목표훈련'; $('#targetGate').value=btn.dataset.gate; $('#targetGoal').value=btn.dataset.goal; $('#puckPlan').value='10'; debounceSave(); toast('목표훈련이 적용되었습니다');
-  }));
-  $$('.focusPreset').forEach(btn=>btn.addEventListener('click',()=>{
-    goTab('focus'); $('#trainingType').value=btn.dataset.type; $('#targetGoal').value=btn.dataset.goal; debounceSave(); toast('집중훈련이 적용되었습니다');
-  }));
-  document.addEventListener('keydown', e=>{
-    if(e.key==='Escape'){ if(document.activeElement) document.activeElement.blur(); }
-    if(e.key==='Enter' && ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)){ document.activeElement.blur(); }
-    if(e.ctrlKey && e.key.toLowerCase()==='n'){ e.preventDefault(); newRecord(true); }
-    if(e.altKey && /^[1-5]$/.test(e.key)){ e.preventDefault(); ['log','target','focus','question','update'][Number(e.key)-1] && goTab(['log','target','focus','question','update'][Number(e.key)-1]); }
-  });
-}
-
-function goTab(tab){
-  App.currentTab=tab;
-  $$('#tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
-  $$('.tabPanel').forEach(p=>p.classList.add('hidden'));
-  $('#sessionPanel').classList.toggle('hidden', ['question','update'].includes(tab));
-  if(tab==='target') $('#targetPanel').classList.remove('hidden');
-  if(tab==='focus') $('#focusPanel').classList.remove('hidden');
-  if(tab==='question') $('#questionPanel').classList.remove('hidden');
-  if(tab==='update') $('#updatePanel').classList.remove('hidden');
-  $('#sessionTitle').textContent = ({log:'일반기록',target:'목표훈련',focus:'집중훈련',question:'질문·성찰',update:'업데이트'})[tab] || '일반기록';
-  if(tab==='target'){ $('#trainingType').value='목표훈련'; if(!$('#puckPlan').value) $('#puckPlan').value='10'; debounceSave(); }
-  if(tab==='focus'){ $('#trainingType').value='집중훈련'; debounceSave(); }
-}
-
-function emptyRecord(){
-  return { id:uid(), createdAt:new Date().toISOString(), updatedAt:new Date().toISOString(), date:today(), player:'', place:'', mode:'슐런', trainingType:'일반 경기기록', puckPlan:30, targetGate:'', targetGoal:'', principle:'', reflection:'', nextGoal:'' };
-}
-
-function newRecord(showMsg){
-  if(App.current) saveCurrent();
-  App.current = emptyRecord();
-  fields.forEach(id=>{ if($('#'+id)) $('#'+id).value = App.current[id] || (id==='date'?today():''); });
-  qKeys.forEach(id=>$('#'+id).value=0);
-  goTab('log'); calcAndRender(); localDraft(); if(showMsg) toast('새 기록을 시작합니다');
-}
-
-function fillForm(r){
-  App.current = Object.assign(emptyRecord(), r || {});
-  fields.forEach(id=>{ if($('#'+id)) $('#'+id).value = App.current[id] ?? ''; });
-  if(!$('#date').value) $('#date').value=today();
-  qKeys.forEach(id=>$('#'+id).value = App.current[id] || 0);
-  calcAndRender(); localDraft(); window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function collectForm(){
-  const r = Object.assign({}, App.current || emptyRecord());
-  fields.forEach(id=>r[id]=$('#'+id).value);
-  qKeys.forEach(id=>r[id]=num($('#'+id).value));
-  r.mode='슐런'; r.updatedAt=new Date().toISOString();
-  const score = calcScore(r); Object.assign(r, score);
-  return r;
-}
-
-function calcScore(r){
-  const c2=num(r.q1_2)+num(r.q2_2)+num(r.q3_2), c3=num(r.q1_3)+num(r.q2_3)+num(r.q3_3), c4=num(r.q1_4)+num(r.q2_4)+num(r.q3_4), c1=num(r.q1_1)+num(r.q2_1)+num(r.q3_1);
-  const sets = Math.min(c2,c3,c4,c1);
-  const score = sets*20 + (c2-sets)*2 + (c3-sets)*3 + (c4-sets)*4 + (c1-sets)*1;
-  const totalIn = c2+c3+c4+c1;
-  const puckPlan = num(r.puckPlan)||30;
-  const successRate = puckPlan ? Math.round((totalIn/puckPlan)*1000)/10 : 0;
-  return {final_2:c2,final_3:c3,final_4:c4,final_1:c1,lineInSets:sets,score,totalIn,successRate};
-}
-
-function calcAndRender(){
-  const r=collectForm();
-  $('#scoreView').textContent=r.score;
-  $('#setsView').textContent=r.lineInSets;
-  $('#totalInView').textContent=r.totalIn;
-  $('#rateView').textContent=(r.successRate||0)+'%';
-  $('#final2').textContent=r.final_2; $('#final3').textContent=r.final_3; $('#final4').textContent=r.final_4; $('#final1').textContent=r.final_1;
-  $('#coachBox').innerHTML = coachText(r);
-}
-
-function coachText(r){
-  const counts = [{g:'2점',v:r.final_2},{g:'3점',v:r.final_3},{g:'4점',v:r.final_4},{g:'1점',v:r.final_1}];
-  const min = counts.slice().sort((a,b)=>a.v-b.v)[0];
-  const max = counts.slice().sort((a,b)=>b.v-a.v)[0];
-  let lines=[];
-  if(r.totalIn===0) lines.push('먼저 1쿼터 기록을 넣으면 자동으로 점수와 다음 훈련 제안이 나옵니다.');
-  else {
-    if(r.lineInSets < 3 && r.totalIn >= 12) lines.push(`통과 퍽은 있는데 라인인 세트가 낮습니다. 다음은 ${min.g} 관문 보완이 좋습니다.`);
-    if(num(r.missShort) > num(r.missLong)+2) lines.push('짧게 멈춘 퍽이 많습니다. 출발 힘보다 끝까지 밀어주는 감각을 점검하세요.');
-    if(num(r.missLong) > num(r.missShort)+2) lines.push('강하게 지나간 퍽이 많습니다. 손목 고정보다 힘 조절과 릴리스 속도를 먼저 낮춰보세요.');
-    if(num(r.missLeft) > num(r.missRight)+2) lines.push('왼쪽 이탈이 많습니다. 손 끝 방향이 왼쪽으로 닫히는지 확인하세요.');
-    if(num(r.missRight) > num(r.missLeft)+2) lines.push('오른쪽 이탈이 많습니다. 릴리스 순간 손목이 열리는지 확인하세요.');
-    if(!lines.length) lines.push(`가장 적은 관문은 ${min.g}, 가장 많은 관문은 ${max.g}입니다. 다음 훈련은 “적은 관문 10개 목표”가 좋습니다.`);
-  }
-  return `<b>훈련 코치 메모</b><ul>${lines.map(x=>`<li>${x}</li>`).join('')}</ul>`;
-}
-
-function saveCurrent(){
-  if(!App.current) return;
-  const r = collectForm();
-  App.current = r;
-  upsertLocalRecord(r);
-  localDraft();
-  renderRecords();
-  if(App.serverReady){
-    setStatus('구글시트 저장 중...');
-    google.script.run.withSuccessHandler(res=>{ setStatus('구글시트 자동저장 완료'); if(res && res.record) upsertLocalRecord(res.record); saveLocal(); renderRecords(); })
-      .withFailureHandler(err=>{ setStatus('로컬 저장됨 / 시트 저장 실패'); queueUnsynced(r); })
-      .saveSession(r);
-  } else setStatus('로컬 자동저장 완료');
-}
-
-function upsertLocalRecord(r){
-  const i=App.records.findIndex(x=>String(x.id)===String(r.id));
-  if(i>=0) App.records[i]=r; else App.records.unshift(r);
-  App.records.sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
-  saveLocal();
-}
-
-function renderAll(){ calcAndRender(); renderRecords(); }
-function renderRecords(){
-  const box=$('#recordList');
-  if(!App.records.length){ box.innerHTML='<div class="help">아직 기록이 없습니다.</div>'; return; }
-  box.innerHTML = App.records.slice(0,80).map(r=>recordHTML(r)).join('');
-  $$('.record').forEach(el=>el.addEventListener('click',()=>fillForm(App.records.find(r=>r.id===el.dataset.id))));
-}
-function recordHTML(r){
-  const s = calcScore(r); const total = Math.max(1,s.totalIn); const w2=s.final_2/total*100,w3=s.final_3/total*100,w4=s.final_4/total*100,w1=s.final_1/total*100;
-  return `<div class="record" data-id="${r.id}"><div class="recordTop"><div><div class="recordTitle">${r.date||''} · ${r.trainingType||'기록'} · ${s.score}점</div><div class="recordMeta">${r.targetGoal||'목표 없음'} / 라인인 ${s.lineInSets}세트 / ${s.totalIn}개 통과</div></div><span class="pill ${s.score>=100?'good':s.score>=70?'warn':''}">${s.successRate||0}%</span></div><div class="miniChart"><span class="bar" style="width:${w2}%;background:#b9c6ff"></span><span class="bar" style="width:${w3}%;background:#a8e0c2"></span><span class="bar" style="width:${w4}%;background:#ffd99a"></span><span class="bar" style="width:${w1}%;background:#ffb7b7"></span></div><div class="recordMeta">2:${s.final_2} · 3:${s.final_3} · 4:${s.final_4} · 1:${s.final_1}</div></div>`;
-}
-
-function saveQuestion(){
-  const item={id:uid(),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),date:today(),player:$('#player').value,question:$('#qQuestion').value,answer:$('#qAnswer').value,linkedSessionId:App.current?.id||'',tags:$('#qTags').value};
-  App.questions.unshift(item); saveLocal(); toast('질문 기록 저장됨');
-  if(App.serverReady) google.script.run.withFailureHandler(()=>setStatus('질문은 로컬 저장됨')).saveQuestion(item);
-  $('#qAnswer').value='';
-}
-function saveUpdate(){
-  const item={id:uid(),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),version:$('#uVersion').value||today(),title:$('#uTitle').value,content:$('#uContent').value,tags:'슐런일지'};
-  App.updates.unshift(item); saveLocal(); toast('업데이트 기록 저장됨');
-  if(App.serverReady) google.script.run.withFailureHandler(()=>setStatus('업데이트는 로컬 저장됨')).saveUpdate(item);
-  $('#uTitle').value=''; $('#uContent').value='';
-}
-
-function setupSheet(){
-  if(!App.serverReady){ toast('Apps Script로 배포하면 시트구성이 작동합니다'); return; }
-  setStatus('시트 구성 중...');
-  google.script.run.withSuccessHandler(()=>{ setStatus('시트 구성 완료'); toast('시트 구성이 완료되었습니다'); loadServer(); })
-    .withFailureHandler(err=>{ setStatus('시트 구성 실패'); toast('권한 또는 스프레드시트 연결을 확인하세요'); })
-    .setupSjoelenSheet();
-}
-function loadServer(){
-  setStatus('구글시트 불러오는 중...');
-  google.script.run.withSuccessHandler(data=>{
-    if(data && data.ok){
-      mergeRecords(data.records||[]); App.questions=data.questions||App.questions; App.updates=data.updates||App.updates; saveLocal(); renderRecords(); setStatus('구글시트 연결됨');
-    }
-  }).withFailureHandler(()=>setStatus('로컬 모드 / 시트 불러오기 실패')).getInitialData(300);
-}
-function mergeRecords(list){
-  (list||[]).forEach(r=>{ if(r && r.id){ const i=App.records.findIndex(x=>String(x.id)===String(r.id)); if(i>=0) App.records[i]=Object.assign(App.records[i],r); else App.records.push(r); }});
-  App.records.sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
-}
-
-function localDraft(){ localStorage.setItem(App.key+'-draft', JSON.stringify(App.current||{})); }
-function saveLocal(){ localStorage.setItem(App.key, JSON.stringify({records:App.records,questions:App.questions,updates:App.updates})); }
-function loadLocal(){
-  try{ const data=JSON.parse(localStorage.getItem(App.key)||'{}'); App.records=data.records||[]; App.questions=data.questions||[]; App.updates=data.updates||[]; App.current=JSON.parse(localStorage.getItem(App.key+'-draft')||'null'); if(App.current) fillForm(App.current); }catch(e){ console.warn(e); }
-}
-function queueUnsynced(r){ const q=JSON.parse(localStorage.getItem(App.key+'-queue')||'[]'); q.unshift(r); localStorage.setItem(App.key+'-queue',JSON.stringify(q.slice(0,100))); saveLocal(); }
-
-function exportCSV(){
-  const headers=['date','player','place','trainingType','puckPlan','targetGate','targetGoal','score','lineInSets','totalIn','successRate','final_2','final_3','final_4','final_1','principle','reflection','nextGoal'];
-  const rows=[headers].concat(App.records.map(r=>{ const s=calcScore(r); const o=Object.assign({},r,s); return headers.map(h=>String(o[h]??'').replaceAll('"','""')); }));
-  const csv='\ufeff'+rows.map(row=>row.map(v=>`"${v}"`).join(',')).join('\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='슐런_훈련일지_'+today()+'.csv'; a.click(); URL.revokeObjectURL(a.href);
-}
-
-window.addEventListener('DOMContentLoaded', init);
-</script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
