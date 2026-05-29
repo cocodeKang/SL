@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#111827" />
-  <title>슐런 훈련 일지 Firebase</title>
+  <title>슐런 훈련 일지 Firebase v2</title>
   <style>
     :root{--bg:#0f172a;--panel:#111827;--card:#1f2937;--card2:#0b1220;--text:#f8fafc;--muted:#94a3b8;--line:#334155;--pri:#38bdf8;--pri2:#0284c7;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;--shadow:0 12px 34px rgba(0,0,0,.3);--radius:18px;--bottom:72px}*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#0f172a,#111827 45%,#020617);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.45}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:14px;padding:10px 14px;background:#334155;color:#fff;touch-action:manipulation}button:active{transform:translateY(1px)}button.primary{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#00111f;font-weight:800}button.secondary{background:#263449}button.danger{background:#7f1d1d}button.ghost{background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.35);color:#dff7ff}.app-shell{max-width:1220px;margin:0 auto;padding:24px 18px 96px}.topbar{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:18px}.eyebrow{letter-spacing:.16em;text-transform:uppercase;color:var(--pri);font-size:12px;margin:0 0 8px}h1{font-size:clamp(28px,4vw,44px);line-height:1;margin:0}h2{font-size:clamp(24px,3vw,34px);margin:0}h3{margin:0 0 14px;font-size:20px}.subtitle,.panel-head p,.small-note{color:var(--muted);margin:8px 0 0}.status-card{display:flex;gap:12px;align-items:flex-start;min-width:310px;background:rgba(15,23,42,.78);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}.sync-dot{width:12px;height:12px;border-radius:50%;margin-top:5px;background:var(--warn);box-shadow:0 0 0 5px rgba(245,158,11,.12)}.sync-dot.online{background:var(--ok);box-shadow:0 0 0 5px rgba(34,197,94,.12)}.sync-dot.offline{background:var(--bad);box-shadow:0 0 0 5px rgba(239,68,68,.12)}.status-card small{display:block;color:var(--muted);margin-top:2px}.login-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.login-actions button{font-size:13px;padding:8px 10px}.tabbar{position:sticky;top:0;z-index:5;display:flex;gap:8px;overflow:auto;padding:10px 0;margin-bottom:16px;background:linear-gradient(180deg,rgba(15,23,42,.97),rgba(15,23,42,.86));backdrop-filter:blur(8px)}.tab{white-space:nowrap;background:#172033;color:#cbd5e1;border:1px solid transparent}.tab.active{background:rgba(56,189,248,.18);border-color:rgba(56,189,248,.45);color:#fff;font-weight:800}.panel{display:none}.panel.active{display:block}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:14px 0 18px}.card,.stat-card{background:rgba(31,41,55,.9);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}.stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}.stat-card span{display:block;color:var(--muted);font-size:14px}.stat-card strong{display:block;font-size:30px;margin:6px 0}.stat-card small{color:var(--muted)}.two-col{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}.guide-list{padding-left:20px;margin:0}.guide-list li{margin:8px 0}.tip{color:#bae6fd;background:rgba(14,165,233,.12);border:1px solid rgba(14,165,233,.25);padding:12px;border-radius:14px}.form-card{display:flex;flex-direction:column;gap:16px}.form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.form-grid.compact{grid-template-columns:repeat(4,minmax(0,1fr))}.form-grid.one{grid-template-columns:1fr}.textarea-grid{grid-template-columns:repeat(3,minmax(0,1fr))}label{display:flex;flex-direction:column;gap:8px;color:#e5e7eb;font-weight:700}input,select,textarea{width:100%;border:1px solid #475569;background:#0b1220;color:#fff;border-radius:14px;padding:12px;outline:none}textarea{resize:vertical}input:focus,select:focus,textarea:focus{border-color:var(--pri);box-shadow:0 0 0 4px rgba(56,189,248,.13)}.score-preview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.score-preview>div{background:#0b1220;border:1px solid #263449;border-radius:16px;padding:14px}.score-preview span{display:block;color:var(--muted);font-size:13px}.score-preview strong{display:block;font-size:26px;margin-top:3px}.table-wrap{overflow:auto;border-radius:16px;border:1px solid var(--line)}table{width:100%;border-collapse:collapse;min-width:640px}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:center}th{background:#0b1220;color:#bae6fd}.gate-cell{display:flex;justify-content:center;gap:8px;align-items:center}.gate-cell input{width:72px;text-align:center;padding:10px}.gate-cell button{padding:8px 11px;background:#263449}.detail-box{border:1px solid var(--line);border-radius:16px;padding:12px;background:rgba(15,23,42,.5)}summary{cursor:pointer;font-weight:800;color:#bae6fd}.target-buttons,.actions{display:flex;gap:10px;flex-wrap:wrap}.target-buttons button{background:#0b1220;border:1px solid #475569}.target-buttons button.active{border-color:var(--pri);background:rgba(56,189,248,.18)}.routine-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.routine-grid label{flex-direction:row;align-items:center;background:#0b1220;border:1px solid #263449;border-radius:14px;padding:12px}.routine-grid input{width:auto}.range-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.range-grid output{color:var(--pri);font-weight:900}.list{display:flex;flex-direction:column;gap:10px}.list.empty{color:var(--muted);border:1px dashed #475569;border-radius:14px;padding:14px}.item{background:#0b1220;border:1px solid #263449;border-radius:15px;padding:14px}.item b{color:#fff}.item .meta{color:var(--muted);font-size:13px;margin-bottom:8px}.item .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.chip{font-size:12px;background:#172033;border:1px solid #334155;border-radius:999px;padding:4px 8px;color:#cbd5e1}.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#020617;color:#fff;border:1px solid #334155;border-radius:999px;padding:12px 18px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.2s;z-index:30}.toast.show{opacity:1}.mobile-bottom{display:none;position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(15,23,42,.95);border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom));grid-template-columns:repeat(4,1fr);gap:8px}.mobile-bottom button{padding:12px 6px;background:#172033;border:1px solid #334155;font-weight:800}.hidden{display:none!important}@media(max-width:900px){.app-shell{padding:18px 12px var(--bottom)}.topbar{flex-direction:column}.status-card{width:100%;min-width:0}.stats-grid,.two-col,.form-grid,.textarea-grid,.score-preview,.routine-grid,.range-grid{grid-template-columns:1fr}.panel-head{flex-direction:column}.mobile-bottom{display:grid}.tabbar{display:none}.card,.stat-card{padding:15px}table{min-width:500px}h1{font-size:30px}}@media(min-width:901px){.desktop-only{display:block}}  
   </style>
@@ -85,11 +85,11 @@
   storageBucket: "sl-log-bcd57.firebasestorage.app",
   messagingSenderId: "1000932363217",
   appId: "1:1000932363217:web:ee059ba2b1d60c8a972ef0",\
-    };
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signInAnonymously, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+    // Firebase SDK는 아래 initFirebase()에서 동적으로 불러옵니다.
+    // 이렇게 해야 CDN 로딩 실패나 설정 오류가 있어도 탭/입력/버튼 UI는 먼저 정상 작동합니다.
+    let initializeApp, getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signInAnonymously, signOut, onAuthStateChanged;
+    let getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot, getDocs;
 
     const $ = (id) => document.getElementById(id);
     const today = () => new Date().toISOString().slice(0,10);
@@ -244,19 +244,64 @@
     }
 
     async function initFirebase(){
+      // 버튼이 아무 반응 없는 것처럼 보이지 않도록, Firebase와 무관한 UI는 이미 위에서 초기화합니다.
       if(!hasFirebaseConfig()){
         setStatus('offline','Firebase 설정 필요','index.html 안의 firebaseConfig 값을 먼저 붙여넣어 주세요.');
         $('googleLoginBtn').addEventListener('click',()=>toast('firebaseConfig 입력 후 로그인할 수 있습니다.'));
         $('anonLoginBtn').addEventListener('click',()=>toast('firebaseConfig 입력 후 사용할 수 있습니다.'));
         return;
       }
+
       try{
-        state.app=initializeApp(firebaseConfig); state.auth=getAuth(state.app); state.db=getFirestore(state.app);
-        $('googleLoginBtn').addEventListener('click', async()=>{ try{ await signInWithPopup(state.auth, new GoogleAuthProvider()); } catch(err){ console.error(err); if(err.code==='auth/popup-blocked'){ await signInWithRedirect(state.auth, new GoogleAuthProvider()); } else toast('Google 로그인 실패: '+(err.code||err.message)); } });
-        $('anonLoginBtn').addEventListener('click', async()=>{ try{ await signInAnonymously(state.auth); } catch(err){ console.error(err); toast('익명 로그인 실패: '+(err.code||err.message)); } });
+        setStatus('offline','Firebase 불러오는 중','SDK 파일을 확인하고 있습니다.');
+        const [appMod, authMod, fsMod] = await Promise.all([
+          import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js'),
+          import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js'),
+          import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js')
+        ]);
+
+        ({ initializeApp } = appMod);
+        ({ getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signInAnonymously, signOut, onAuthStateChanged } = authMod);
+        ({ getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot, getDocs } = fsMod);
+
+        state.app=initializeApp(firebaseConfig);
+        state.auth=getAuth(state.app);
+        state.db=getFirestore(state.app);
+
+        $('googleLoginBtn').addEventListener('click', async()=>{
+          try{
+            await signInWithPopup(state.auth, new GoogleAuthProvider());
+          }catch(err){
+            console.error(err);
+            if(err.code==='auth/popup-blocked' || err.code==='auth/operation-not-supported-in-this-environment'){
+              await signInWithRedirect(state.auth, new GoogleAuthProvider());
+            } else {
+              toast('Google 로그인 실패: '+(err.code||err.message));
+            }
+          }
+        });
+        $('anonLoginBtn').addEventListener('click', async()=>{
+          try{ await signInAnonymously(state.auth); }
+          catch(err){ console.error(err); toast('익명 로그인 실패: '+(err.code||err.message)); }
+        });
         $('logoutBtn').addEventListener('click', async()=>{ await signOut(state.auth); });
-        onAuthStateChanged(state.auth, user=>{ state.user=user; if(user){ setStatus('online','동기화 연결됨', user.isAnonymous?'이 기기 전용 익명 로그인':(user.email||user.uid)); $('logoutBtn').hidden=false; $('googleLoginBtn').hidden=true; $('anonLoginBtn').hidden=true; subscribe(); } else { unsubAll(); state.sessions=[]; state.reflections=[]; state.updates=[]; render(); setStatus('offline','로그인 필요','Google 로그인 또는 이 기기만을 선택하세요.'); $('logoutBtn').hidden=true; $('googleLoginBtn').hidden=false; $('anonLoginBtn').hidden=false; } });
-      }catch(err){ console.error(err); setStatus('offline','Firebase 초기화 실패', err.message); toast('Firebase 초기화 실패: '+err.message); }
+        onAuthStateChanged(state.auth, user=>{
+          state.user=user;
+          if(user){
+            setStatus('online','동기화 연결됨', user.isAnonymous?'이 기기 전용 익명 로그인':(user.email||user.uid));
+            $('logoutBtn').hidden=false; $('googleLoginBtn').hidden=true; $('anonLoginBtn').hidden=true; subscribe();
+          } else {
+            unsubAll(); state.sessions=[]; state.reflections=[]; state.updates=[]; render();
+            setStatus('offline','로그인 필요','Google 로그인 또는 이 기기만을 선택하세요.');
+            $('logoutBtn').hidden=true; $('googleLoginBtn').hidden=false; $('anonLoginBtn').hidden=false;
+          }
+        });
+      }catch(err){
+        console.error(err);
+        setStatus('offline','Firebase SDK 로딩 실패','브라우저 콘솔(F12)에서 오류를 확인해 주세요.');
+        $('googleLoginBtn').addEventListener('click',()=>toast('Firebase SDK 로딩 실패: 인터넷/CDN 차단 여부 확인'));
+        $('anonLoginBtn').addEventListener('click',()=>toast('Firebase SDK 로딩 실패: 인터넷/CDN 차단 여부 확인'));
+      }
     }
 
     async function exportCsv(){
